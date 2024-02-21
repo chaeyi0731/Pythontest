@@ -1,7 +1,5 @@
-# 첫글자가 대문자인 Flask 프레임워크 호출은 Node.js와 동일하게 '생성자 함수'를 뜻한다.
-# 두개의 모듈을 호출한 사례
-from flask import Flask 
-from flask import render_template
+# Flask에서 두개의 모듈을 가져왔다
+from flask import Flask, request, render_template
 
 # 만약 아래의 코드가 Node.js라면
 # const app = new Flask(app.py); 와 같은 명령이 될 것
@@ -16,6 +14,12 @@ def index():
     return render_template('index.html')
 #위의 함수는 라우팅을 통해 '/'로 들어오는 요청을 처리하는 함수로, 직관적으로 render를 위한 것이라는 것을 쉽게 알아챌 수 있다.
 
+@app.route('/submit', methods=['POST'])
+
+def submit():
+    name = request.form['name']
+
+    return f'Hello, {name}!'
 # 아래의 조건문은
 # __ 언더스코어가 두개씩 들어간 코드는 일반적으로 파이썬 언어자체의 특수한 문법을 나타내는 경우가 많다.
 # 파이썬 코어 
