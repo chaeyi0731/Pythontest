@@ -1,5 +1,7 @@
-# Flask에서 두개의 모듈을 가져왔다
-from flask import Flask, request, render_template , render_template_string
+
+from flask import Flask, request, render_template , render_template_string, flash,redirect ,url_for
+import sqlite3
+
 
 # 만약 아래의 코드가 Node.js라면
 # const app = new Flask(app.py); 와 같은 명령이 될 것
@@ -14,29 +16,52 @@ def index():
     return render_template('index.html')
 #위의 함수는 라우팅을 통해 '/'로 들어오는 요청을 처리하는 함수로, 직관적으로 render를 위한 것이라는 것을 쉽게 알아챌 수 있다.
 
-@app.route('/submit', methods=['POST'])
-
-def submit():
-    name = request.form['name']
-
-    print(f'입력한 이름: {name}')
-
-
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    message = ''  # 로그인 실패 시 메시지를 담을 변수
+    if request.method == 'POST':
+        user_id = request.form['id']
+        password = request.form['password']
+        
+        # 데이터베이스 연결
+        conn = sqlite3.connect('example.db')
+        c = conn.cursor()
+        
+        # 입력된 ID와 비밀번호가 일치하는 사용자 검색
+        c.execute("SELECT * FROM users WHERE id=? AND password=?", (user_id, password))
+        user = c.fetchone()
+        
+        conn.close()
+        
+        if user:
+            # 로그인 성공 시 메인 페이지로 리다이렉트
+            return redirect(url_for('index'))
+        else:
+            # 로그인 실패 시 메시지 설정
+            message = "로그인 정보를 확인하세요."
+    # GET 요청 또는 로그인 실패 시 로그인 폼 렌더링
+    # 로그인 실패 메시지가 있을 경우 JavaScript alert를 통해 표시
     return render_template_string('''
-        <!DOCTYPE html>
-        <html lang="en">
-        <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Submission Result</title>
-        </head>
-        <body>
-            <h1>제출 완료!</h1>
-            <p>입력하신 이름: {{ name }}</p>
-            <a href="/"><button>홈으로 돌아가기</button></a>
-        </body>
-        </html>
-    ''', name=name)
+    <!DOCTYPE html>
+    <html>
+    <head><title>Login</title></head>
+    <body>
+        <script>
+        window.onload = function() {
+            var message = "{{message}}";
+            if (message) {
+                alert(message);
+            }
+        }
+        </script>
+        <form method="post">
+            ID: <input type="text" name="id"><br>
+            Password: <input type="password" name="password"><br>
+            <input type="submit" value="Login">
+        </form>
+    </body>
+    </html>
+    ''', message=message)
 # 아래의 조건문은
 # __ 언더스코어가 두개씩 들어간 코드는 일반적으로 파이썬 언어자체의 특수한 문법을 나타내는 경우가 많다.
 # 파이썬 코어 
