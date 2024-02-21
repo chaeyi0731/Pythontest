@@ -1,5 +1,5 @@
 # Flask에서 두개의 모듈을 가져왔다
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template , render_template_string
 
 # 만약 아래의 코드가 Node.js라면
 # const app = new Flask(app.py); 와 같은 명령이 될 것
@@ -19,7 +19,24 @@ def index():
 def submit():
     name = request.form['name']
 
-    return f'Hello, {name}!'
+    print(f'입력한 이름: {name}')
+
+
+    return render_template_string('''
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Submission Result</title>
+        </head>
+        <body>
+            <h1>제출 완료!</h1>
+            <p>입력하신 이름: {{ name }}</p>
+            <a href="/"><button>홈으로 돌아가기</button></a>
+        </body>
+        </html>
+    ''', name=name)
 # 아래의 조건문은
 # __ 언더스코어가 두개씩 들어간 코드는 일반적으로 파이썬 언어자체의 특수한 문법을 나타내는 경우가 많다.
 # 파이썬 코어 
@@ -31,7 +48,7 @@ def submit():
 # 아래의 조건문은 현재 실행되는 스크립트가 메인 스크립트인 경우에만 아래의 코드를 실행하라는 뜻
 if __name__ == '__main__':
     #app이라는 변수는 위 생성한 인스턴스이고, run() 이라는 함수는 Flask 메서드이다.
-    app.run(debug=True) # debug=True는 개발자모드로 실행하라는 뜻
+     app.run(debug=True, port=5001) # debug=True는 개발자모드로 실행하라는 뜻
 
 # 자바스크립트의 console.log()와 같은 역할을 하는 코드
 # print(app)
